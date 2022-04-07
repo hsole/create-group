@@ -6,8 +6,6 @@ class SelectGroupModel extends GroupNode.model {
     this.width = data.width || 300;
     this.height = data.height || 200;
     this.foldable = true;
-    // this.draggable = false;
-    this.unfoldedBounds = { x1: 0, y1: 0, x2: 0, y2: 0 };
     this.foldedWidth = 175;
     this.foldedHeight = 40;
     const forbidConnect = {
@@ -41,16 +39,9 @@ class SelectGroupModel extends GroupNode.model {
     return style;
   }
 
-  getMoveRules() {
-    return true;
-  }
-
   foldGroup(isFolded) {
-    const { x1, y1, x2, y2 } = this.getBounds();
     super.foldGroup(isFolded);
     if (isFolded) {
-      this.unfoldedBounds = { x1, y1, x2, y2 };
-      this.getMoveRules = this.moveRestrict;
       this.text = { ...this.foldedText };
       if (!this.text.value) {
         this.text.value = "已折叠分组";
@@ -58,10 +49,6 @@ class SelectGroupModel extends GroupNode.model {
       this.text.x = this.x + 10;
       this.text.y = this.y;
     } else {
-      this.unfoldedBounds = { x1: 0, y1: 0, x2: 0, y2: 0 };
-      this.getMoveRules = () => {
-        return true;
-      };
       this.foldedText = { ...this.text };
       this.text = {};
     }
@@ -69,13 +56,6 @@ class SelectGroupModel extends GroupNode.model {
 
   deleteGroup() {
     this.graphModel.deleteNode(this.id);
-  }
-
-  isPointInRange({ x, y }, { x1, y1, x2, y2 }) {
-    if (x > x1 && x < x2 && y > y1 && y < y2) {
-      return true;
-    }
-    return false;
   }
 }
 class SelectGroupView extends GroupNode.view {
